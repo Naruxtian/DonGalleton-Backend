@@ -70,8 +70,14 @@ export const getUsers = asyncHandler(async (req: Request, res: Response, next: N
         const querySnapshot = await getDocs(q);
         const usrs: any[] = [];
         querySnapshot.forEach((doc) => {
+            doc.data().id = doc.id;
             usrs.push({ ...doc.data(), id: doc.id });
+        });        
+
+        usrs.forEach((usr) => {
+
         });
+
         new ResponseHttp(res).send("Usuarios obtenidos correctamente", usrs, true, 200);
     } catch (error: any) {
         const errorCode = error.code;

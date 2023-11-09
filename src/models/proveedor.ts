@@ -5,9 +5,10 @@ export interface Proveedor {
     empresa: string;
     direccion: string;
     email: string;
-    productos: [{
+    producto: {
         producto: string;
         costo: number;
-    }]
+        cantidad: number;
+    }
     estatus: number;
 }

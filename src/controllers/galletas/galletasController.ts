@@ -49,6 +49,7 @@ export const getAllGalletas = asyncHandler( async (req: Request, res: Response, 
         const querySnapshot = await getDocs(q);
         const galletas: any[] = [];
         querySnapshot.forEach((doc) => {
+            doc.data().id = doc.id;
             galletas.push({ ...doc.data(), id: doc.id });
         });
         new ResponseHttp(res).send("Galletas obtenidas correctamente", galletas, true, 200);
@@ -62,7 +63,7 @@ export const getAllGalletas = asyncHandler( async (req: Request, res: Response, 
 export const updateGalleta = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {id} = req.params;
-        const {nombre, inventario, precio, descripcion, cantidadLote, imagen, estatus   } = req.body;
+        const {nombre, inventario, precio, descripcion, cantidadLote, imagen} = req.body;
         const q = query(collection(db, "galletas"));
         const querySnapshot = await getDocs(q);
         const galletas: any[] = [];
@@ -74,33 +75,17 @@ export const updateGalleta = asyncHandler( async (req: Request, res: Response, n
         if(galleta.empty){
             return next(new ErrorResponse("No existe una galleta con ese nombre", 400));
         }
-        const galletaData = galleta.docs[0].data();
-        const galletaNombre = galletaData.nombre;
-        const galletaInventario = galletaData.inventario;
-        const galletaPrecio = galletaData.precio;
-        const galletaDescripcion = galletaData.descripcion;
-        const galletaCantidadLote = galletaData.cantidadLote;
-        const galletaImagen = galletaData.imagen;
-        const galletaEstatus = galletaData.estatus;
-        const galletaIngredientes = galletaData.ingredientes;
-        const galletaReceta = galletaData.receta;
-        const newGalleta: Galleta = {
-            nombre: nombre ? nombre : galletaNombre,
-            inventario: inventario ? inventario : galletaInventario,
-            precio: precio ? precio : galletaPrecio,
-            descripcion: descripcion ? descripcion : galletaDescripcion,
-            cantidadLote: cantidadLote ? cantidadLote : galletaCantidadLote,
-            imagen: imagen ? imagen : galletaImagen,
-            estatus: estatus ? estatus : galletaEstatus,
-            ingredientes: galletaIngredientes,
-            receta: galletaReceta
-        };
-        const docRef = doc(db, "galletas", id);
-        const newGalletaObj = Object.entries(newGalleta).reduce((obj, [key, value]) => {
-            obj[key] = value;
-            return obj;
-        }, {} as { [key: string]: any });
-        await new ResponseHttp(res).send("Galleta actualizada correctamente", newGalletaObj, true, 200);
+        
+        await updateDoc(doc(db, "galletas", id), {
+            nombre: nombre,
+            inventario: inventario,
+            precio: precio,
+            descripcion: descripcion,
+            cantidadLote: cantidadLote,
+            imagen: imagen,
+        });
+
+        await new ResponseHttp(res).send("Galleta actualizada correctamente", {}, true, 200);
     }
     catch (error: any) {
         const errorCode = error.code;
