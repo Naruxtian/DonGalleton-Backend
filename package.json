@@ -1,0 +1,37 @@
+{
+  "name": "dongalleton",
+  "version": "1.0.0",
+  "description": "backend for dongalleto app",
+  "main": "server.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/server.ts",
+    "dev": "nodemon server.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "firebase": "^10.5.2",
+    "firebase-admin": "^11.11.0",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.6",
+    "@types/cors": "^2.8.16",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.21",
+    "@types/express-validator": "^3.0.0",
+    "@types/firebase": "^3.2.1",
+    "@types/helmet": "^4.0.0",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/morgan": "^1.9.9",
+    "@types/winston": "^2.4.4"
+  }
+}
