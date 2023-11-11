@@ -40,6 +40,7 @@ export const getProvedores = asyncHandler( async (req: Request, res: Response, n
         const querySnapshot = await getDocs(q);
         const proveedores: any[] = [];
         querySnapshot.forEach((doc) => {
+            doc.data().id = doc.id;
             proveedores.push({ ...doc.data(), id: doc.id });
         });
         new ResponseHttp(res).send("Proveedores obtenidos correctamente", proveedores, true, 200);
