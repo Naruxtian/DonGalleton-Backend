@@ -144,6 +144,9 @@ export const procesarPedido = asyncHandler( async (req: Request, res: Response, 
             return next(new ErrorResponse("No hay suficiente inventario de " + galletaError, 400));
         }
         
+        await updateDoc(doc(db, "pedidos", id), {
+            estatus: 2
+        });
 
         await new ResponseHttp(res).send("Pedido procesado correctamente", {}, true, 200);
     }
