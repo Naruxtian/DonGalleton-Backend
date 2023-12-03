@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllMateriasPrimas, insertMateriaPrima, deleteMateriaPrimaa} from "./materiaPrimaController";
+import { getAllMateriasPrimas, insertMateriaPrima, deleteMateriaPrimaa, mermarMateriaPrima} from "./materiaPrimaController";
 
 const router = Router();
 
@@ -9,6 +9,8 @@ router
     .post("/insert", insertMateriaPrima
     )    
     .delete("/delete/:id", deleteMateriaPrimaa
+    )
+    .put("/mermar/:id", mermarMateriaPrima
     );
 
 export default router;

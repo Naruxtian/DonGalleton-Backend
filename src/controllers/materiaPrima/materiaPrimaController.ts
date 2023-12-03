@@ -110,3 +110,34 @@ export const deleteMateriaPrimaa = asyncHandler( async (req: Request, res: Respo
         next(new ErrorResponse(errorMessage, errorCode));
       }
 });
+
+export const mermarMateriaPrima = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {nombre, cantidad} = req.body;
+        const q = query(collection(db, "materiaPrima"));
+        const querySnapshot = await getDocs(q);
+        const materiasPrimas: any[] = [];
+        querySnapshot.forEach((doc) => {
+            materiasPrimas.push({ ...doc.data(), id: doc.id });
+        });
+        const materiaPrima = materiasPrimas.find((materiaPrima) => materiaPrima.nombre === nombre);
+        if (!materiaPrima) {
+            return next(new ErrorResponse("No existe una materia prima con ese nombre", 400));
+        }
+        if(materiaPrima.inventario < cantidad){
+            return next(new ErrorResponse("No hay suficiente materia prima para mermar", 400));
+        }
+        
+        const materiaPrimaRef = doc(db, "materiaPrima", materiaPrima.id);
+        const materiaPrimaActualizada = {
+            inventario: materiaPrima.inventario - cantidad
+        }
+        await updateDoc(materiaPrimaRef, materiaPrimaActualizada);
+        new ResponseHttp(res).send("Materia prima mermada correctamente", {}, true, 200);
+    }
+    catch (error: any) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        next(new ErrorResponse(errorMessage, errorCode));
+      }
+});

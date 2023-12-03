@@ -118,3 +118,32 @@ export const deleteGalleta = asyncHandler( async (req: Request, res: Response, n
         next(new ErrorResponse(errorMessage, errorCode));
       } 
 });
+
+export const mermarGalleta = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {id} = req.params;
+        const {merma} = req.body;
+        const q = query(collection(db, "galletas"));
+        const querySnapshot = await getDocs(q);
+        const galletas: any[] = [];
+        querySnapshot.forEach((doc) => {
+            galletas.push({ ...doc.data(), id: doc.id });
+        });
+        const galleta = galletas.find((galleta) => galleta.id === id);
+        if(galleta.empty){
+            return next(new ErrorResponse("No existe una galleta con ese id", 400));
+        }
+        if(galleta.inventario < merma){
+            return next(new ErrorResponse("No se puede merma más de lo que hay en inventario", 400));
+        }
+        await updateDoc(doc(db, "galletas", id), {
+            inventario: galleta.inventario - merma
+        });
+        new ResponseHttp(res).send("Galleta merma actualizada correctamente", galleta, true, 200);
+    }
+    catch (error: any) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        next(new ErrorResponse(errorMessage, errorCode));
+      } 
+});
