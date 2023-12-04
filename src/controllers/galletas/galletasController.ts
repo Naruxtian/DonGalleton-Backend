@@ -147,3 +147,80 @@ export const mermarGalleta = asyncHandler( async (req: Request, res: Response, n
         next(new ErrorResponse(errorMessage, errorCode));
       } 
 });
+
+export const addIngrediente = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {id, materiaPrima, cantidad} = req.body;
+        const q = query(collection(db, "galletas"));
+        const querySnapshot = await getDocs(q);
+        const galletas: any[] = [];
+        querySnapshot.forEach((doc) => {
+            galletas.push({ ...doc.data(), id: doc.id });
+        });
+        const galleta = galletas.find((galleta) => galleta.id === id);
+        if(galleta.empty){
+            return next(new ErrorResponse("No existe una galleta con ese id", 400));
+        }
+        const q2 = query(collection(db, "materiasPrimas"));
+        const querySnapshot2 = await getDocs(q2);
+        const materiasPrimas: any[] = [];
+        querySnapshot2.forEach((doc) => {
+            materiasPrimas.push({ ...doc.data(), id: doc.id });
+        });
+        const materiaPrimaObj = materiasPrimas.find((materiaPrimaObj) => materiaPrimaObj.id === id);
+        if(materiaPrimaObj.empty){
+            return next(new ErrorResponse("No existe esa materia prima", 400));
+        }
+        galleta.Ingredientes.push({
+            materiaPrima: materiaPrima,
+            cantidad: cantidad
+        });
+        await updateDoc(doc(db, "galletas", id), {
+            Ingredientes: galleta.Ingredientes
+        });
+
+        new ResponseHttp(res).send("Ingrediente agregado correctamente", galleta, true, 200);
+    }
+    catch (error: any) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        next(new ErrorResponse(errorMessage, errorCode));
+      } 
+});
+
+export const removeIngrediente = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const {id, materiaPrima} = req.body;
+        const q = query(collection(db, "galletas"));
+        const querySnapshot = await getDocs(q);
+        const galletas: any[] = [];
+        querySnapshot.forEach((doc) => {
+            galletas.push({ ...doc.data(), id: doc.id });
+        });
+        const galleta = galletas.find((galleta) => galleta.id === id);
+        if(galleta.empty){
+            return next(new ErrorResponse("No existe una galleta con ese id", 400));
+        }
+        const q2 = query(collection(db, "materiasPrimas"));
+        const querySnapshot2 = await getDocs(q2);
+        const materiasPrimas: any[] = [];
+        querySnapshot2.forEach((doc) => {
+            materiasPrimas.push({ ...doc.data(), id: doc.id });
+        });
+        const materiaPrimaObj = materiasPrimas.find((materiaPrimaObj) => materiaPrimaObj.id === id);
+        if(materiaPrimaObj.empty){
+            return next(new ErrorResponse("No existe esa materia prima", 400));
+        }
+        const ingredientes = galleta.Ingredientes.filter((ingrediente: any) => ingrediente.materiaPrima !== materiaPrima);
+        await updateDoc(doc(db, "galletas", id), {
+            Ingredientes: ingredientes
+        });
+
+        new ResponseHttp(res).send("Ingrediente eliminado correctamente", galleta, true, 200);
+    }
+    catch (error: any) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        next(new ErrorResponse(errorMessage, errorCode));
+      }
+});

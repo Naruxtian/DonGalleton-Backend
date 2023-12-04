@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllGalletas, insertGalleta, updateGalleta, deleteGalleta, mermarGalleta} from "./galletasController";
+import { getAllGalletas, insertGalleta, updateGalleta, deleteGalleta, mermarGalleta, addIngrediente, removeIngrediente} from "./galletasController";
 
 const router = Router();
 
@@ -13,6 +13,10 @@ router
     .delete("/delete/:id", deleteGalleta
     )
     .put("/mermar", mermarGalleta
+    )
+    .put("/addIngrediente", addIngrediente
+    )
+    .put("/removeIngrediente", removeIngrediente
     );
 
 export default router;
