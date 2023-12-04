@@ -4,6 +4,7 @@ import galletasRoute from "./controllers/galletas/route";
 import materiaPrimaRoute from "./controllers/materiaPrima/route";
 import proveedoresRoute from "./controllers/provedores/route";
 import pedidosRoute from "./controllers/pedidos/route";
+import provisionesRoute from "./controllers/provisiones/route";
 
 const router = Router();
 router
@@ -16,6 +17,8 @@ router
     .use("/proveedores", proveedoresRoute
     )
     .use("/pedidos", pedidosRoute
+    )
+    .use("/provisiones", provisionesRoute
     );
 
 export default router;
