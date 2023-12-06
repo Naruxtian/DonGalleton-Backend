@@ -11,14 +11,14 @@ import { Provision } from "../../models/provision";
 
 export const createProvision = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {proveedor, materiaPrima, cantidad, costoTotal, fechaPedido} = req.body;
+        const {proveedor, materiaPrima, cantidad, costoTotal} = req.body;
         
         const newProvision: Provision = {
             proveedor: proveedor,
             materiaPrima: materiaPrima,
             cantidad: cantidad,
             costoTotal: costoTotal,
-            fechaPedido: fechaPedido,
+            fechaPedido: new Date(),
             estatus: 1,
         };
         const docRef = await addDoc(collection(db, "provisiones"), newProvision);

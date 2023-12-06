@@ -8,7 +8,6 @@ export interface Proveedor {
     producto: {
         producto: string;
         costo: number;
-        cantidad: number;
     }
     estatus: number;
 }

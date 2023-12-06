@@ -8,7 +8,7 @@ import { Galleta } from "../../models/galleta";
 
 export const insertGalleta = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {nombre, inventario, precio, descripcion, cantidadLote, imagen, estatus   } = req.body;
+        const {nombre, inventario, precio, descripcion, cantidadLote, imagen, estatus, receta   } = req.body;
         const q = query(collection(db, "galletas"));
         const querySnapshot = await getDocs(q);
         const galletas: any[] = [];
@@ -27,7 +27,8 @@ export const insertGalleta = asyncHandler( async (req: Request, res: Response, n
             descripcion: descripcion,
             cantidadLote: cantidadLote,
             imagen: imagen,
-            estatus: estatus
+            estatus: estatus,
+            receta: receta
         };
         const docRef = await addDoc(collection(db, "galletas"), newGalleta);
         if(docRef){
@@ -63,29 +64,20 @@ export const getAllGalletas = asyncHandler( async (req: Request, res: Response, 
 export const updateGalleta = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {id} = req.params;
-        const {nombre, inventario, precio, descripcion, cantidadLote, imagen} = req.body;
-        const q = query(collection(db, "galletas"));
-        const querySnapshot = await getDocs(q);
-        const galletas: any[] = [];
-        querySnapshot.forEach((doc) => {
-            galletas.push({ ...doc.data(), id: doc.id });
-        });
+        const {nombre, inventario, precio, descripcion, cantidadLote, imagen, receta} = req.body;
+        const docRef = doc(db, "galletas", id);
 
-        const galleta = galletas.find((galleta) => galleta.nombre === nombre);
-        if(galleta.empty){
-            return next(new ErrorResponse("No existe una galleta con ese nombre", 400));
-        }
-        
-        await updateDoc(doc(db, "galletas", id), {
+        await updateDoc(docRef, {
             nombre: nombre,
             inventario: inventario,
             precio: precio,
             descripcion: descripcion,
             cantidadLote: cantidadLote,
             imagen: imagen,
+            receta: receta
         });
 
-        await new ResponseHttp(res).send("Galleta actualizada correctamente", {}, true, 200);
+        new ResponseHttp(res).send("Galleta actualizada correctamente", {}, true, 200);
     }
     catch (error: any) {
         const errorCode = error.code;

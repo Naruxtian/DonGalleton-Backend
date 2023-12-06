@@ -8,15 +8,15 @@ router
     )
     .post("/insert", insertGalleta
     )
-    .put("/update", updateGalleta
+    .put("/update/:id", updateGalleta
     )
     .delete("/delete/:id", deleteGalleta
     )
     .put("/mermar", mermarGalleta
     )
-    .put("/addIngrediente", addIngrediente
+    .put("/addIngrediente/", addIngrediente
     )
-    .put("/removeIngrediente", removeIngrediente
+    .put("/removeIngrediente/", removeIngrediente
     );
 
 export default router;
