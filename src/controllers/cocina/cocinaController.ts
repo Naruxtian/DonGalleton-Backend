@@ -16,7 +16,7 @@ export const createOrdenCocina = asyncHandler( async (req: Request, res: Respons
         
         const newOrdenCocina: ordenCocina = {
             id_galleta: id_galleta,
-            cantidadLotes: cantidadLotes,
+            cantidadLotes: parseInt(cantidadLotes),
             fecha: new Date(),
             estatus: 1,
         };

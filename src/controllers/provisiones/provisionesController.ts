@@ -16,7 +16,7 @@ export const createProvision = asyncHandler( async (req: Request, res: Response,
         const newProvision: Provision = {
             proveedor: proveedor,
             materiaPrima: materiaPrima,
-            cantidad: cantidad,
+            cantidad: parseInt(cantidad),
             costoTotal: costoTotal,
             fechaPedido: new Date(),
             estatus: 1,
