@@ -64,18 +64,25 @@ export const getAllGalletas = asyncHandler( async (req: Request, res: Response, 
 export const updateGalleta = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {id} = req.params;
-        const {nombre, inventario, precio, descripcion, cantidadLote, imagen, receta} = req.body;
+        const {nombre, inventario, precio, descripcion, cantidadLote, imagen, receta, ingredientes} = req.body;
         const docRef = doc(db, "galletas", id);
 
-        await updateDoc(docRef, {
-            nombre: nombre,
-            inventario: inventario,
-            precio: precio,
-            descripcion: descripcion,
-            cantidadLote: cantidadLote,
-            imagen: imagen,
-            receta: receta
-        });
+        const updateData: any = {
+            nombre,
+            inventario,
+            precio,
+            descripcion,
+            cantidadLote,
+            imagen,
+            receta,
+          };
+      
+          // Si hay ingredientes, agregarlos al objeto de actualización
+          if (ingredientes && ingredientes.length > 0) {
+            updateData.ingredientes = ingredientes;
+          }
+      
+          await updateDoc(docRef, updateData);
 
         new ResponseHttp(res).send("Galleta actualizada correctamente", {}, true, 200);
     }

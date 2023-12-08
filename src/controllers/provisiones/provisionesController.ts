@@ -42,8 +42,9 @@ export const getProvisiones = asyncHandler( async (req: Request, res: Response, 
         const q = query(collection(db, "provisiones"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-            doc.data().id = doc.id;
-            provisiones.push(doc.data() as Provision);
+            const provision = doc.data() as Provision;
+            provision.id = doc.id;
+            provisiones.push(provision);
         });
         new ResponseHttp(res).send("Provisiones obtenidos correctamente", provisiones, true, 200);
     } catch (error: any) {
@@ -95,6 +96,7 @@ export const cancelarProvision = asyncHandler( async (req: Request, res: Respons
         const {id} = req.params;
         await updateDoc(doc(db, "provisiones", id), {
             estatus: 0,
+            fechaCancelacion: new Date()
         });
       
         new ResponseHttp(res).send("Provision cancelada correctamente", {}, true, 200);

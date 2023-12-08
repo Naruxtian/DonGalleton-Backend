@@ -8,7 +8,7 @@ import { User } from "../../models/user";
 
 export const registerUser = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {email, password, name, rol, cellphone, adress } = req.body;
+        const {email, password, nombre, rol, telefono, direccion } = req.body;
         const q = query(collection(db, "users"));
         const querySnapshot = await getDocs(q);
         const usrs: any[] = [];
@@ -21,12 +21,12 @@ export const registerUser = asyncHandler( async (req: Request, res: Response, ne
             return next(new ErrorResponse("El email ya está registrado", 400));
         }
         const newUser: User = {
-            nombre: name,
+            nombre: nombre,
             email: email,
             password: password,
             rol: rol,
-            telefono: cellphone,
-            direccion: adress,
+            telefono: telefono,
+            direccion: direccion,
         };
         const docRef = await addDoc(collection(db, "users"), newUser);
         if(docRef){

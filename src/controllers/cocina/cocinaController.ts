@@ -12,12 +12,12 @@ import { Galleta } from "../../models/galleta";
 
 export const createOrdenCocina = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {id_galleta, cantidadLotes, fecha} = req.body;
+        const {id_galleta, cantidadLotes} = req.body;
         
         const newOrdenCocina: ordenCocina = {
             id_galleta: id_galleta,
             cantidadLotes: cantidadLotes,
-            fecha: fecha,
+            fecha: new Date(),
             estatus: 1,
         };
         const docRef = await addDoc(collection(db, "ordenesCocina"), newOrdenCocina);
@@ -41,9 +41,10 @@ export const getOrdenesCocina = asyncHandler( async (req: Request, res: Response
         const q = query(collection(db, "ordenesCocina"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-            doc.data().id = doc.id;
-            ordenesCocina.push(doc.data() as ordenCocina);
-        });
+            const orden = doc.data() as ordenCocina;
+            orden.id = doc.id; 
+            ordenesCocina.push(orden);
+          });
         new ResponseHttp(res).send("Ordenes de cocina obtenidas correctamente", ordenesCocina, true, 200);
     } catch (error: any) {
         const errorCode = error.code;

@@ -6,5 +6,6 @@ export interface Provision {
     costoTotal: number;
     fechaPedido: Date;
     fechaEntrega?: Date;
+    fechaCancelacion?: Date;
     estatus: number;
 }
