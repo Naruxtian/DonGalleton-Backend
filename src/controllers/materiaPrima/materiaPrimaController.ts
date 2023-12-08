@@ -22,7 +22,7 @@ export const insertMateriaPrima = asyncHandler( async (req: Request, res: Respon
         }
         const newMateriaPrima: MateriaPrima = {
             nombre: nombre,
-            inventario: inventario,
+            inventario: parseFloat(inventario),
             unidad: unidad
         };
         const docRef = await addDoc(collection(db, "materiaPrima"), newMateriaPrima);

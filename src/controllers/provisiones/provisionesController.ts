@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDocs, query, where, updateDoc} from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, query, where, updateDoc, getDoc} from "firebase/firestore";
 import asyncHandler from "../../middleware/async"
 import ResponseHttp from "../../util/response";
 import ErrorResponse from "../../util/errorResponse";
@@ -57,36 +57,38 @@ export const getProvisiones = asyncHandler( async (req: Request, res: Response, 
 export const recibirProvision = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {id} = req.params;
-        const q = query(collection(db, "provisiones"), where("id", "==", id));
-        const querySnapshot = await getDocs(q);
-        const provisiones: Provision[] = [];
-        querySnapshot.forEach((doc) => {
-            doc.data().id = doc.id;
-            provisiones.push(doc.data() as Provision);
-        });
+        const provision = getDoc(doc(db, "provisiones", id));
+        const provisionData = (await provision).data();
         await updateDoc(doc(db, "provisiones", id), {
             estatus: 2,
             fechaEntrega: new Date(),
         });
-        const provision = provisiones[0];
         
-        const q2 = query(collection(db, "materiasPrimas"), where("nombre", "==", provision.materiaPrima));
+        const q2 = query(collection(db, "materiaPrima"));
         const querySnapshot2 = await getDocs(q2);
         const materiasPrimas: any[] = [];
         querySnapshot2.forEach((doc) => {
             doc.data().id = doc.id;
-            materiasPrimas.push(doc.data());
+            const data = {
+                ...doc.data(),
+                id: doc.id,
+            }
+            materiasPrimas.push(data);
         });
-        const materiaPrima = materiasPrimas[0];
-        const cantidad = materiaPrima.cantidad + provision.cantidad;
-        await updateDoc(doc(db, "materiasPrimas", materiaPrima.id), {
-            cantidad: cantidad,
+        materiasPrimas.forEach(async (materiaPrima) => {
+            if(materiaPrima.id == provisionData!.materiaPrima){
+                const cantidad = materiaPrima.inventario + parseFloat(provisionData!.cantidad);
+                await updateDoc(doc(db, "materiaPrima", materiaPrima.id), {
+                    inventario: cantidad,
+                });
+            }
         });
         
         new ResponseHttp(res).send("Provision recibida correctamente", {}, true, 200);
     } catch (error: any) {
         const errorCode = error.code;
         const errorMessage = error.message;
+        console.log(error);
         next(new ErrorResponse(errorMessage, errorCode));
       }
 });
