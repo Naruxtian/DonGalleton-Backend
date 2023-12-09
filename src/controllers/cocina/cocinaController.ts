@@ -78,27 +78,42 @@ export const completarOrden = asyncHandler( async (req: Request, res: Response, 
         };
         await updateDoc(docRef, update);
 
-        const ordenCocina: ordenCocina[] = [];
-        const q = query(collection(db, "ordenesCocina"), where("id", "==", id));
+        const ordenesCocina: ordenCocina[] = [];
+        const q = query(collection(db, "ordenesCocina"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
             doc.data().id = doc.id;
-            ordenCocina.push(doc.data() as ordenCocina);
+            ordenesCocina.push(doc.data() as ordenCocina);
         });
 
-        const galleta: Galleta[] = [];
-        const q2 = query(collection(db, "galletas"), where("id", "==", ordenCocina[0].id_galleta));
+        let ordenCocina;
+
+        ordenesCocina.forEach(async (orden) => {
+            if(orden.id == id){
+                ordenCocina = orden;
+            }
+        });
+
+        const galletas: Galleta[] = [];
+        const q2 = query(collection(db, "galletas"));
         const querySnapshot2 = await getDocs(q2);
         querySnapshot2.forEach((doc) => {
             doc.data().id = doc.id;
-            galleta.push(doc.data() as Galleta);
+            galletas.push(doc.data() as Galleta);
         });
-        const galletaData = galleta[0];
-        galletaData.inventario = galletaData.inventario + (ordenCocina[0].cantidadLotes * galletaData.cantidadLote);
 
-        const docRef2 = doc(db, "galletas", galletaData.id!);
+        let galletaData;
+        galletas.forEach(async (galleta) => {
+            if(galleta.id == ordenCocina!.id_galleta){
+                galletaData = galleta;
+         }
+        });
+        
+        galletaData!.inventario = galletaData!.inventario + (ordenCocina!.cantidadLotes * galletaData!.cantidadLote);
+
+        const docRef2 = doc(db, "galletas", galletaData!.id!);
         const update2 = {
-            inventario: galletaData.inventario,
+            inventario: galletaData!.inventario,
         };
         await updateDoc(docRef2, update2);
 
