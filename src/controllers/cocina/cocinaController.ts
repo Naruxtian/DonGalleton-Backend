@@ -78,12 +78,12 @@ export const completarOrden = asyncHandler( async (req: Request, res: Response, 
         };
         await updateDoc(docRef, update);
 
-        const ordenesCocina: ordenCocina[] = [];
+        const ordenesCocina: any[] = [];
         const q = query(collection(db, "ordenesCocina"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
             doc.data().id = doc.id;
-            ordenesCocina.push(doc.data() as ordenCocina);
+            ordenesCocina.push({ ...doc.data(), id: doc.id});
         });
 
         let ordenCocina;
@@ -94,12 +94,12 @@ export const completarOrden = asyncHandler( async (req: Request, res: Response, 
             }
         });
 
-        const galletas: Galleta[] = [];
+        const galletas: any[] = [];
         const q2 = query(collection(db, "galletas"));
         const querySnapshot2 = await getDocs(q2);
         querySnapshot2.forEach((doc) => {
             doc.data().id = doc.id;
-            galletas.push(doc.data() as Galleta);
+            galletas.push({ ...doc.data(), id: doc.id});
         });
 
         let galletaData;
@@ -117,6 +117,26 @@ export const completarOrden = asyncHandler( async (req: Request, res: Response, 
         };
         await updateDoc(docRef2, update2);
 
+        const inventarios: any[] = [];
+        const q3 = query(collection(db, "materiaPrima"));
+        const querySnapshot3 = await getDocs(q3);
+        querySnapshot3.forEach((doc) => {
+            doc.data().id = doc.id;
+            inventarios.push({ ...doc.data(), id: doc.id});
+        });
+
+        galletaData!.ingredientes.forEach((ingrediente: any) => {
+            inventarios.forEach(async (inventario) => {
+                if(ingrediente.materiaPrima == inventario.id){
+                    inventario.inventario = inventario.inventario - (ingrediente.cantidad * ordenCocina!.cantidadLotes);
+                    const docRef3 = doc(db, "materiaPrima", inventario.id!);
+                    const update3 = {
+                        inventario: inventario.inventario,
+                    };
+                    await updateDoc(docRef3, update3);
+                }
+            });
+        });
 
         new ResponseHttp(res).send("Orden de cocina terminada correctamente", null, true, 200);
     } catch (error: any) {

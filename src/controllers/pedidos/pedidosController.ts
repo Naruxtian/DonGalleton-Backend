@@ -42,8 +42,9 @@ export const getPedidos = asyncHandler( async (req: Request, res: Response, next
         const q = query(collection(db, "pedidos"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-            doc.data().id = doc.id;
-            pedidos.push(doc.data() as pedido);
+            let pedido = doc.data() as pedido;
+            pedido.id = doc.id;
+            pedidos.push(pedido);
         });
         new ResponseHttp(res).send("Pedidos obtenidos correctamente", pedidos, true, 200);
     } catch (error: any) {
@@ -119,7 +120,7 @@ export const procesarPedido = asyncHandler( async (req: Request, res: Response, 
 
         galletasPedido.forEach(async (galletaPedido: any) => {
             galletasData.forEach(async (galletaData: any) => {
-                if(galletaPedido.galleta === galletaData.nombre){
+                if(galletaPedido.galleta === galletaData.id){
                     if(galletaPedido.cantidad > galletaData.inventario){
                         flagError = true;
                         galletaError = galletaPedido.galleta;
