@@ -113,16 +113,17 @@ export const deleteMateriaPrimaa = asyncHandler( async (req: Request, res: Respo
 
 export const mermarMateriaPrima = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const {nombre, cantidad} = req.body;
+        const {id} = req.params;
+        const {cantidad} = req.body;
         const q = query(collection(db, "materiaPrima"));
         const querySnapshot = await getDocs(q);
         const materiasPrimas: any[] = [];
         querySnapshot.forEach((doc) => {
             materiasPrimas.push({ ...doc.data(), id: doc.id });
         });
-        const materiaPrima = materiasPrimas.find((materiaPrima) => materiaPrima.nombre === nombre);
+        const materiaPrima = materiasPrimas.find((materiaPrima) => materiaPrima.id === id);
         if (!materiaPrima) {
-            return next(new ErrorResponse("No existe una materia prima con ese nombre", 400));
+            return next(new ErrorResponse("No existe una materia prima con ese id", 400));
         }
         if(materiaPrima.inventario < cantidad){
             return next(new ErrorResponse("No hay suficiente materia prima para mermar", 400));
